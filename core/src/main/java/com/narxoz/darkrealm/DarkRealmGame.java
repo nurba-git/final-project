@@ -1,32 +1,54 @@
 package com.narxoz.darkrealm;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.narxoz.darkrealm.screens.MainMenuScreen;
+import com.narxoz.darkrealm.systems.SoundManager;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class DarkRealmGame extends ApplicationAdapter {
-    private SpriteBatch batch;
-    private Texture image;
+/**
+ * DarkRealm — главный класс игры.
+ * Screen State Machine: MainMenu → Game → Pause / GameOver → Victory → MainMenu
+ * SOLID-S: только держит общие ресурсы и текущий Screen.
+ */
+public class DarkRealmGame extends Game {
+
+    public SpriteBatch batch;
+    public ShapeRenderer sr;
+    public BitmapFont font;
+    public BitmapFont fontSmall;
+    public SoundManager sound;
+
+    // Глобальное состояние прогресса (между экранами)
+    public int currentZone = 1;
+    public int totalKills  = 0;
+    public int questsDone  = 0;
 
     @Override
     public void create() {
-        batch = new SpriteBatch();
-        image = new Texture("libgdx.png");
+        batch     = new SpriteBatch();
+        sr        = new ShapeRenderer();
+        font      = new BitmapFont();
+        fontSmall = new BitmapFont();
+        font.getData().setScale(1.2f);
+        fontSmall.getData().setScale(0.75f);
+        sound     = new SoundManager();
+        setScreen(new MainMenuScreen(this));
     }
 
-    @Override
-    public void render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        batch.begin();
-        batch.draw(image, 140, 210);
-        batch.end();
+    public void resetProgress() {
+        currentZone = 1;
+        totalKills  = 0;
+        questsDone  = 0;
     }
 
     @Override
     public void dispose() {
         batch.dispose();
-        image.dispose();
+        sr.dispose();
+        font.dispose();
+        fontSmall.dispose();
+        sound.dispose();
     }
 }
