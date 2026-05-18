@@ -97,7 +97,7 @@ public class GameScreen implements Screen {
             bossSpawned = false;
         }
 
-һ
+
         Room r0 = dungeon.rooms.get(0);
         shrines.add(new float[]{r0.centerX()*C.TILE+C.TILE/2f+20, r0.centerY()*C.TILE+C.TILE/2f, 0});
 
