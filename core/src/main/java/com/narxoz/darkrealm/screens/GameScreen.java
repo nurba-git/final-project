@@ -9,7 +9,7 @@ import com.narxoz.darkrealm.interfaces.IInputHandler;
 import com.narxoz.darkrealm.systems.*;
 import com.narxoz.darkrealm.world.*;
 
-)
+
 import com.narxoz.darkrealm.screens.VictoryScreen;
 import com.narxoz.darkrealm.screens.PauseScreen;
 import com.narxoz.darkrealm.screens.GameOverScreen;
