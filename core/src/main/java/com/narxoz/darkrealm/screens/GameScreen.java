@@ -9,7 +9,7 @@ import com.narxoz.darkrealm.interfaces.IInputHandler;
 import com.narxoz.darkrealm.systems.*;
 import com.narxoz.darkrealm.world.*;
 
-// Explicit imports for same-package screens (avoids cascade compile errors)
+)
 import com.narxoz.darkrealm.screens.VictoryScreen;
 import com.narxoz.darkrealm.screens.PauseScreen;
 import com.narxoz.darkrealm.screens.GameOverScreen;
