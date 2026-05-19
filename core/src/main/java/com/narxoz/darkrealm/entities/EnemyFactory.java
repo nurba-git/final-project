@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-// ── ENEMY FACTORY ────────────────────────────────────────────────
-/** SOLID-S: только создание врагов по зоне. */
 public class EnemyFactory {
 
     private static final Random rng = new Random();
@@ -18,7 +16,7 @@ public class EnemyFactory {
     public static List<Enemy> spawnForZone(List<Room> rooms, int zone,
             CollisionSystem col, BulletPool bp, ParticleSystem fx) {
         List<Enemy> list = new ArrayList<>();
-        // Skip spawn room (0) and exit room (last)
+    
         for (int i = 1; i < rooms.size() - 1; i++) {
             Room r = rooms.get(i);
             int count = 2 + Math.min(rng.nextInt(2), zone - 1);
