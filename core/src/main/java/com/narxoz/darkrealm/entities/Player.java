@@ -11,20 +11,15 @@ import com.narxoz.darkrealm.systems.ParticleSystem;
 
 import java.util.List;
 
-/**
- * SOLID-S: только состояние игрока + движение + скиллы.
- * Ввод читает IInputHandler (SOLID-D).
- * Рисует себя пиксельным макетом через ShapeRenderer.
- */
 public class Player implements IDamageable {
 
-    // ── Stats ──
+
     public float x, y;
     public int hp, maxHp, mp, maxMp;
     public int atk, def, level, exp, expToNext;
     public int statPoints = 0;
 
-    // ── State ──
+    
     private float invTimer   = 0f;
     private float hitFlash   = 0f;
     private float attackTimer= 0f;
@@ -33,18 +28,18 @@ public class Player implements IDamageable {
     private float facing     = 0f;          // radians
     private float mpRegenTimer = 0f;
 
-    // ── Skills ──
+    
     private float cdShadowStrike = 0f;
     private float cdVoidShield   = 0f;
     private float cdSoulDrain    = 0f;
     private float voidShieldTimer= 0f;     // active shield
     private boolean shieldActive = false;
 
-    // ── References ──
+    
     private final CollisionSystem col;
     private final ParticleSystem  fx;
 
-    // ── Colors ──
+    
     private static final Color COL_ARMOR  = new Color(0.11f,0.11f,0.15f,1f);
     private static final Color COL_PLATE  = new Color(0.16f,0.16f,0.22f,1f);
     private static final Color COL_GOLD   = new Color(0.83f,0.63f,0.09f,1f);
@@ -62,9 +57,9 @@ public class Player implements IDamageable {
         atk = 10; def = 5; level = 1; exp = 0; expToNext = 100;
     }
 
-    // ── UPDATE ────────────────────────────────────────────────────
+    
     public void update(float dt, IInputHandler input) {
-        // Timers
+        
         if (invTimer   > 0) invTimer   -= dt;
         if (hitFlash   > 0) hitFlash   -= dt;
         if (attackTimer> 0) attackTimer -= dt;
@@ -75,17 +70,17 @@ public class Player implements IDamageable {
         if (voidShieldTimer > 0) { voidShieldTimer -= dt; shieldActive = true; }
         else shieldActive = false;
 
-        // Mana regen
+    
         mpRegenTimer += dt;
         if (mpRegenTimer >= C.MP_REGEN_INTERVAL) {
             mp = Math.min(maxMp, mp + C.MP_REGEN_AMOUNT);
             mpRegenTimer = 0;
         }
 
-        // Facing
+        
         facing = CollisionSystem.angle(x, y, input.getAimX(), input.getAimY());
 
-        // Dodge
+    
         if (input.isDodge() && !dodging && dodgeTimer <= 0) {
             dodging = true;
             dodgeTimer = C.DODGE_DURATION;
@@ -93,7 +88,7 @@ public class Player implements IDamageable {
             fx.burst(x, y, new Color(0.6f,0.6f,1f,1f), 6, 1.5f, 0.3f);
         }
 
-        // Movement
+    
         float spd = dodging ? C.PLAYER_SPEED * C.DODGE_SPEED_MULT : C.PLAYER_SPEED;
         float dx = input.getMoveX() * spd * dt;
         float dy = input.getMoveY() * spd * dt;
@@ -102,7 +97,7 @@ public class Player implements IDamageable {
         x = pos[0]; y = pos[1];
     }
 
-    // ── ATTACK ───────────────────────────────────────────────────
+
     public boolean tryAttack() {
         if (attackTimer > 0) return false;
         attackTimer = C.ATTACK_COOLDOWN;
@@ -111,12 +106,12 @@ public class Player implements IDamageable {
         return true;
     }
 
-    // ── SKILLS ───────────────────────────────────────────────────
-    /** Shadow Strike — dash forward + deal 3× ATK in range. Returns true if fired. */
+    
+  
     public boolean tryShadowStrike(List<Enemy> enemies) {
         if (cdShadowStrike > 0 || mp < 20) return false;
         mp -= 20; cdShadowStrike = C.CD_SHADOW_STRIKE;
-        // Dash — пошагово, чтобы не проходить сквозь стены
+
         float dashDist = 48f;
         float stepSize = C.PLAYER_RADIUS;
         int steps = (int)(dashDist / stepSize) + 1;
@@ -125,7 +120,7 @@ public class Player implements IDamageable {
             if (pos[0] == x && pos[1] == y) break; // уперся в стену
             x = pos[0]; y = pos[1];
         }
-        // Damage
+        
         for (Enemy e : enemies) {
             if (!e.isAlive()) continue;
             if (CollisionSystem.dist(x,y,e.x,e.y) < C.SHADOW_STRIKE_RANGE + e.radius)
@@ -136,7 +131,7 @@ public class Player implements IDamageable {
         return true;
     }
 
-    /** Void Shield — block all damage for 2s. */
+
     public boolean tryVoidShield() {
         if (cdVoidShield > 0 || mp < 30) return false;
         mp -= 30; cdVoidShield = C.CD_VOID_SHIELD;
@@ -145,7 +140,7 @@ public class Player implements IDamageable {
         return true;
     }
 
-    /** Soul Drain — steal 20 HP from nearest enemy. */
+
     public boolean trySoulDrain(List<Enemy> enemies) {
         if (cdSoulDrain > 0 || mp < 25) return false;
         Enemy nearest = null; float minD = C.SOUL_DRAIN_RANGE;
@@ -164,7 +159,7 @@ public class Player implements IDamageable {
         return true;
     }
 
-    // ── DAMAGE ───────────────────────────────────────────────────
+
     @Override
     public void takeDamage(int amount) {
         if (invTimer > 0 || shieldActive) return;
@@ -181,7 +176,7 @@ public class Player implements IDamageable {
 
     public void heal(int amount) { hp = Math.min(maxHp, hp + amount); }
 
-    // ── EXP / LEVEL ──────────────────────────────────────────────
+
     public void gainExp(int amount) {
         exp += amount;
         while (exp >= expToNext) {
@@ -194,7 +189,7 @@ public class Player implements IDamageable {
         }
     }
 
-    // ── Getters for cooldowns ────────────────────────────────────
+
     public float getCdSS()  { return cdShadowStrike; }
     public float getCdVS()  { return cdVoidShield; }
     public float getCdSD()  { return cdSoulDrain; }
@@ -203,108 +198,106 @@ public class Player implements IDamageable {
     public float getFacing()        { return facing; }
     public boolean isInvincible()   { return invTimer > 0; }
 
-    // ── DRAW (pixel-art макет, уменьшенный ~0.55x) ───────────────
+
     public void draw(ShapeRenderer sr) {
         float sx = x, sy = y;
         boolean flash = hitFlash > 0 && (int)(hitFlash * 20) % 2 == 0;
 
         if (flash) { sr.setColor(Color.WHITE); }
 
-        // Shadow
+        
         sr.setColor(0f,0f,0f,0.25f); sr.ellipse(sx-5,sy-8,10,3);
 
-        // ── Boots ──
+        
         sr.setColor(flash?Color.WHITE:new Color(0.16f,0.13f,0.11f,1f));
         sr.rect(sx-5,sy-7,4,4); sr.rect(sx+1,sy-7,4,4);
 
-        // ── Leg armor ──
+        
         sr.setColor(flash?Color.WHITE:COL_ARMOR);
         sr.rect(sx-5,sy-3,4,6); sr.rect(sx+1,sy-3,4,6);
 
-        // ── Belt with gold buckle ──
+        
         sr.setColor(flash?Color.WHITE:COL_PLATE);
         sr.rect(sx-6,sy+3,12,3);
         sr.setColor(flash?Color.WHITE:COL_GOLD);
         sr.rect(sx-1,sy+2,3,4);
 
-        // ── Torso plate ──
         sr.setColor(flash?Color.WHITE:COL_ARMOR);
         sr.rect(sx-6,sy+6,12,8);
         sr.setColor(flash?Color.WHITE:COL_PLATE);
         sr.rect(sx-5,sy+7,10,6);
 
-        // ── Chest emblem (gold diamond) ──
+        
         sr.setColor(flash?Color.WHITE:COL_GOLD);
         sr.triangle(sx,sy+7, sx+2,sy+10, sx,sy+13);
         sr.triangle(sx,sy+7, sx-2,sy+10, sx,sy+13);
 
-        // ── Pauldrons ──
+   
         sr.setColor(flash?Color.WHITE:COL_PLATE);
         sr.rect(sx-9,sy+6,4,6); sr.rect(sx+5,sy+6,4,6);
 
-        // ── Arms ──
+     
         sr.setColor(flash?Color.WHITE:COL_ARMOR);
         sr.rect(sx-8,sy+4,3,8); sr.rect(sx+5,sy+4,3,8);
 
-        // ── Gloves ──
+      
         sr.setColor(flash?Color.WHITE:COL_PLATE);
         sr.rect(sx-9,sy,5,4); sr.rect(sx+4,sy,5,4);
 
-        // ── Shield (left) ──
+    
         if (!flash) sr.setColor(COL_SHIELD); else sr.setColor(Color.WHITE);
         float shA = facing + (float)Math.PI;
         float shX = sx + (float)Math.cos(shA)*8, shY = sy + (float)Math.sin(shA)*8;
         sr.rect(shX-2,shY-5,5,10);
         sr.setColor(flash?Color.WHITE:new Color(0.15f,0.38f,0.87f,0.7f));
         sr.rect(shX-2,shY-4,4,8);
-        // Shield cross
+     
         sr.setColor(flash?Color.WHITE:new Color(0.38f,0.64f,0.98f,1f));
         sr.rect(shX-2,shY-1,4,2); sr.rect(shX-1,shY-3,2,6);
 
-        // ── Sword (right, shadow-strike glow) ──
+  
         float swA = facing;
         float swBx=sx+(float)Math.cos(swA)*6, swBy=sy+(float)Math.sin(swA)*6;
         float swEx=sx+(float)Math.cos(swA)*16, swEy=sy+(float)Math.sin(swA)*16;
         sr.setColor(flash?Color.WHITE:new Color(0.6f,0.65f,0.98f,1f));
         sr.rectLine(swBx,swBy,swEx,swEy,2f);
-        // guard
+        
         sr.setColor(flash?Color.WHITE:new Color(0.42f,0.45f,0.55f,1f));
         float gx=sx+(float)Math.cos(swA)*8, gy=sy+(float)Math.sin(swA)*8;
         float perpA=swA+(float)Math.PI/2;
         sr.rectLine(gx+(float)Math.cos(perpA)*3,gy+(float)Math.sin(perpA)*3,
                     gx-(float)Math.cos(perpA)*3,gy-(float)Math.sin(perpA)*3,1.5f);
-        // purple glow when cd=0
         if (cdShadowStrike <= 0) {
             sr.setColor(0.49f,0.23f,0.93f,0.3f);
             sr.rectLine(swBx,swBy,swEx,swEy,5f);
         }
 
-        // ── Neck ──
+        
         sr.setColor(flash?Color.WHITE:COL_PLATE);
         sr.rect(sx-2,sy+14,4,4);
 
-        // ── Head ──
+     
         sr.setColor(flash?Color.WHITE:COL_SKIN);
         sr.ellipse(sx-5,sy+14,10,10);
 
-        // ── Hair ──
+      
         sr.setColor(flash?Color.WHITE:COL_HAIR);
         sr.ellipse(sx-5,sy+18,10,6);
         sr.rect(sx-6,sy+15,2,7);
 
-        // ── Eyes ──
+     
         sr.setColor(flash?Color.WHITE:Color.WHITE);
         sr.ellipse(sx-4,sy+17,3,3); sr.ellipse(sx+1,sy+17,3,3);
         sr.setColor(flash?Color.WHITE:new Color(0.12f,0.23f,0.5f,1f));
         sr.ellipse(sx-4,sy+17,2,2); sr.ellipse(sx+1,sy+17,2,2);
 
-        // ── Scar ──
+       
         if (!flash) {
             sr.setColor(new Color(0.42f,0.23f,0.12f,1f));
             sr.rectLine(sx+3,sy+22,sx+5,sy+17,1f);
         }
 
-        // ── Void Shield aura ──
+      
         if (shieldActive) {
             sr.setColor(0.4f,0.4f,1f,0.25f + (float)Math.sin(System.currentTimeMillis()*0.005f)*0.1f);
             sr.circle(sx, sy+10, 14);
