@@ -9,7 +9,7 @@ import com.narxoz.darkrealm.interfaces.IInputHandler;
 import com.narxoz.darkrealm.systems.*;
 import com.narxoz.darkrealm.world.*;
 
-
+// Explicit imports for same-package screens (avoids cascade compile errors)
 import com.narxoz.darkrealm.screens.VictoryScreen;
 import com.narxoz.darkrealm.screens.PauseScreen;
 import com.narxoz.darkrealm.screens.GameOverScreen;
@@ -17,7 +17,6 @@ import com.narxoz.darkrealm.screens.MainMenuScreen;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class GameScreen implements Screen {
 
@@ -43,16 +42,14 @@ public class GameScreen implements Screen {
     private int kills = 0;
     private int lastPlayerLevel = 1;
 
-
-    private List<float[]> shrines = new ArrayList<>();
-    private List<float[]> chests  = new ArrayList<>();
+    private List<float[]> shrines = new ArrayList<>();   // {x,y,used}
+    private List<float[]> chests  = new ArrayList<>();   // {x,y,opened}
 
     private VillageElder npc;
     private String dialogLine = null;
     private float dialogTimer = 0f;
 
     private float darkAlpha = 0f;
-
 
     private final List<Enemy> toRemove = new ArrayList<>();
 
@@ -91,16 +88,14 @@ public class GameScreen implements Screen {
 
         if (z == 3) {
             boss = EnemyFactory.spawnBoss(
-                    dungeon.rooms.get(dungeon.rooms.size()-1), col, bp, fx);
+                dungeon.rooms.get(dungeon.rooms.size()-1), col, bp, fx);
             boss.setTarget(player);
             boss.setSpawnList(enemies);
             bossSpawned = false;
         }
 
-
         Room r0 = dungeon.rooms.get(0);
         shrines.add(new float[]{r0.centerX()*C.TILE+C.TILE/2f+20, r0.centerY()*C.TILE+C.TILE/2f, 0});
-
 
         for (int i = 1; i < dungeon.rooms.size()-1; i++) {
             if (Math.random() < 0.5f) {
@@ -109,16 +104,14 @@ public class GameScreen implements Screen {
             }
         }
 
-
         if (z <= 2 && dungeon.rooms.size() > 2) {
             Room nr = dungeon.rooms.get(1);
             npc = new VillageElder(nr.centerX()*C.TILE+C.TILE/2f+24,
-                                   nr.centerY()*C.TILE+C.TILE/2f, z);
+                nr.centerY()*C.TILE+C.TILE/2f, z);
         }
 
         darkAlpha = z == 3 ? 0.55f : 0f;
     }
-
     @Override
     public void render(float delta) {
         delta = Math.min(delta, 0.05f);
@@ -139,37 +132,33 @@ public class GameScreen implements Screen {
 
         if (dialogTimer > 0) dialogTimer -= dt;
 
-
         if (input.isSkill()) {
             if (!player.tryShadowStrike(enemies))
                 if (!player.tryVoidShield())
                     player.trySoulDrain(enemies);
         }
 
-
         if (input.isAttack() && player.tryAttack()) {
             game.sound.playHit();
             for (Enemy e : enemies) {
                 if (!e.isAlive()) continue;
                 if (CollisionSystem.dist(player.x, player.y, e.x, e.y)
-                        < C.ATTACK_RANGE + e.radius
-                        && CollisionSystem.hasLineOfSight(col.getMap(), player.x, player.y, e.x, e.y))
+                    < C.ATTACK_RANGE + e.radius
+                    && CollisionSystem.hasLineOfSight(col.getMap(), player.x, player.y, e.x, e.y))
                     e.takeDamage(player.atk);
             }
             if (boss != null && boss.isAlive()) {
                 if (CollisionSystem.dist(player.x, player.y, boss.x, boss.y)
-                        < C.ATTACK_RANGE + boss.radius
-                        && CollisionSystem.hasLineOfSight(col.getMap(), player.x, player.y, boss.x, boss.y))
+                    < C.ATTACK_RANGE + boss.radius
+                    && CollisionSystem.hasLineOfSight(col.getMap(), player.x, player.y, boss.x, boss.y))
                     boss.takeDamage(player.atk);
             }
         }
-
 
         for (Enemy e : enemies) {
             if (!e.isAlive()) { toRemove.add(e); continue; }
             e.update(dt);
         }
-
         for (Enemy e : toRemove) {
             player.gainExp(e.expReward);
             qm.notifyKill(e.type);
@@ -179,24 +168,22 @@ public class GameScreen implements Screen {
         enemies.removeAll(toRemove);
         toRemove.clear();
 
-
         if (zone == 3 && !bossSpawned &&
-                enemies.isEmpty() &&
-                CollisionSystem.dist(player.x, player.y,
-                        dungeon.exitTX * C.TILE + C.TILE/2f,
-                        dungeon.exitTY * C.TILE + C.TILE/2f) < 40) {
+            enemies.isEmpty() &&
+            CollisionSystem.dist(player.x, player.y,
+                dungeon.exitTX * C.TILE + C.TILE/2f,
+                dungeon.exitTY * C.TILE + C.TILE/2f) < 40) {
             bossSpawned = true;
         }
         if (boss != null && bossSpawned) {
             if (boss.isAlive()) boss.update(dt);
             else if (!boss.isAlive() && kills > 0) {
-
+                // Boss dead → victory
                 qm.notifyKill("malgrath");
                 game.questsDone = qm.countDone();
                 game.setScreen(new VictoryScreen(game, kills));
             }
         }
-
         for (Bullet b : new ArrayList<>(bp.getActive())) {
             if (!b.fromPlayer || !b.alive) continue;
             for (Enemy e : enemies) {
@@ -206,11 +193,10 @@ public class GameScreen implements Screen {
                 }
             }
             if (b.alive && boss!=null && boss.isAlive()
-                    && CollisionSystem.circles(b.x,b.y,C.BULLET_RADIUS,boss.x,boss.y,boss.radius)) {
+                && CollisionSystem.circles(b.x,b.y,C.BULLET_RADIUS,boss.x,boss.y,boss.radius)) {
                 boss.takeDamage(b.damage); b.alive=false;
             }
         }
-
 
         for (Bullet b : new ArrayList<>(bp.getActive())) {
             if (b.fromPlayer || !b.alive) continue;
@@ -220,12 +206,10 @@ public class GameScreen implements Screen {
             }
         }
 
-
         if (zone == 3) {
             int t = CollisionSystem.tileAt(dungeon.map, player.x, player.y);
             if (t == C.HAZARD) player.takeDamage((int)(C.HAZARD_DPS * dt));
         }
-
 
         for (float[] s : shrines) {
             if (s[2]==1) continue;
@@ -234,6 +218,30 @@ public class GameScreen implements Screen {
                 fx.burst(s[0],s[1],new Color(0.2f,0.9f,0.4f,1f),10,2f,0.5f);
                 hud.showQuestMsg("Shrine — +30 HP");
                 game.sound.playPickup();
+            }
+        }
+
+        if (input.isInteract()) {
+            for (float[] ch : chests) {
+                if (ch[2] == 1) continue; // already opened
+                if (CollisionSystem.dist(player.x, player.y, ch[0], ch[1]) < 20) {
+                    ch[2] = 1;
+                    game.sound.playPickup();
+                    fx.burst(ch[0], ch[1], new Color(0.83f, 0.63f, 0.09f, 1f), 14, 2.5f, 0.6f);
+                    int roll = (int)(Math.random() * 3);
+                    if (roll == 0) {
+                        int heal = 20 + (int)(Math.random() * 31); // 20-50
+                        player.heal(heal);
+                        hud.showQuestMsg("Сундук открыт! +" + heal + " HP");
+                    } else if (roll == 1) {
+                        player.gainExp(40 + (int)(Math.random() * 61)); // 40-100 EXP
+                        hud.showQuestMsg("Сундук открыт! +EXP");
+                    } else {
+                        player.atk += 2;
+                        hud.showQuestMsg("Сундук открыт! +2 ATK");
+                    }
+                    break;
+                }
             }
         }
 
@@ -246,33 +254,27 @@ public class GameScreen implements Screen {
             }
         }
 
-
         for (QuestManager.Quest q : qm.getJustCompleted()) {
             player.gainExp(q.expReward);
             hud.showQuestMsg("Quest done: "+q.name+"! +"+q.expReward+" EXP");
             game.questsDone++;
         }
 
-
         boolean cleared = enemies.isEmpty() && (zone!=3 || (boss!=null && !boss.isAlive()));
         float ex=dungeon.exitTX*C.TILE+C.TILE/2f, ey=dungeon.exitTY*C.TILE+C.TILE/2f;
         if (cleared && CollisionSystem.dist(player.x,player.y,ex,ey)<16) {
             if (zone < 3) game.setScreen(new GameScreen(game, zone+1));
-
         }
-
 
         if (player.level > lastPlayerLevel) {
             lastPlayerLevel = player.level;
             game.sound.playLevelUp();
         }
 
-
         if (input.isPause()) game.setScreen(new PauseScreen(game, this));
 
         if (!player.isAlive()) game.setScreen(new GameOverScreen(game, zone, kills));
     }
-
 
     private void draw() {
         Gdx.gl.glClearColor(0.04f, 0.02f, 0.08f, 1f);
@@ -292,18 +294,15 @@ public class GameScreen implements Screen {
 
         sr.end();
 
-
         if (darkAlpha > 0) {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             sr.begin(ShapeRenderer.ShapeType.Filled);
             sr.setColor(0f,0f,0f,darkAlpha);
             sr.rect(player.x-C.W,player.y-C.H, C.W*2, C.H*2);
-
             sr.setColor(0f,0f,0f,0f); sr.circle(player.x,player.y,72);
             sr.end();
             Gdx.gl.glDisable(GL20.GL_BLEND);
         }
-
 
         if (dialogTimer > 0 && dialogLine != null) {
             sr.setProjectionMatrix(hudCam.combined);
@@ -317,13 +316,23 @@ public class GameScreen implements Screen {
             game.batch.end();
         }
 
+        boolean nearChest = false;
+        for (float[] ch : chests) {
+            if (ch[2] == 1) continue;
+            if (CollisionSystem.dist(player.x, player.y, ch[0], ch[1]) < 20) {
+                nearChest = true;
+                break;
+            }
+        }
+        hud.setChestHint(nearChest);
 
         sr.setProjectionMatrix(hudCam.combined);
         game.batch.setProjectionMatrix(hudCam.combined);
         boolean bossActive = bossSpawned && boss!=null && boss.isAlive();
         int bHp = bossActive ? boss.getHp() : 0;
         int bMax = bossActive ? boss.getMaxHp() : 0;
-        hud.draw(sr, game.batch, player, dungeon.map, kills, player.level, bossActive, bHp, bMax);
+        hud.draw(sr, game.batch, player, dungeon.map, kills, player.level, bossActive, bHp, bMax,
+            chests, enemies, boss, bossSpawned);
     }
 
     private void drawTiles() {
@@ -357,13 +366,11 @@ public class GameScreen implements Screen {
     }
 
     private void drawInteractables() {
-
         for (float[] s : shrines) {
             if (s[2]==1) { sr.setColor(0.2f,0.2f,0.2f,0.5f); sr.circle(s[0],s[1],6); continue; }
             sr.setColor(0.2f,0.9f,0.4f,0.9f); sr.circle(s[0],s[1],6);
             sr.setColor(0.6f,1f,0.7f,0.4f); sr.circle(s[0],s[1],11);
         }
-
         for (float[] ch : chests) {
             if (ch[2]==1) { sr.setColor(0.3f,0.2f,0.1f,0.5f); sr.rect(ch[0]-6,ch[1]-5,12,10); continue; }
             sr.setColor(0.5f,0.35f,0.08f,1f); sr.rect(ch[0]-7,ch[1]-6,14,12);
@@ -372,7 +379,7 @@ public class GameScreen implements Screen {
         }
     }
 
-    public void resume() { }
+    public void resume() { /* nothing needed */ }
 
     @Override public void resize(int w,int h) {}
     @Override public void pause() {}
