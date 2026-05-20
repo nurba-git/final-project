@@ -4,10 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.narxoz.darkrealm.C;
 import com.narxoz.darkrealm.systems.*;
-
-// ════════════════════════════════════════════════════════════════
-// SHADOW WRAITH — патруль + заряд, зона 1
-// ════════════════════════════════════════════════════════════════
 class ShadowWraith extends Enemy {
 
     private static final Color BODY = new Color(0.24f,0.04f,0.40f,1f);
@@ -45,31 +41,29 @@ class ShadowWraith extends Enemy {
         boolean f = hitFlash>0&&(int)(hitFlash*20)%2==0;
         float bob = (float)Math.sin(bobTimer * 3f) * 2f;
         float sx=x, sy=y+bob;
-
-        // Robe body (уменьшен)
+        
         sr.setColor(f?Color.WHITE:BODY);
         sr.triangle(sx-6,sy-8, sx+6,sy-8, sx+8,sy+7);
         sr.triangle(sx-6,sy-8, sx-8,sy+7, sx+8,sy+7);
-        // Ragged hem
+       
         sr.setColor(f?Color.WHITE:new Color(0.12f,0.02f,0.22f,1f));
         sr.triangle(sx-8,sy+7,sx-5,sy+11,sx-3,sy+7);
         sr.triangle(sx-3,sy+7, sx-1,sy+12, sx+2,sy+7);
         sr.triangle(sx+2,sy+7, sx+5,sy+11, sx+8,sy+7);
 
-        // Head
+       
         sr.setColor(f?Color.WHITE:new Color(0.30f,0.05f,0.50f,1f));
         sr.circle(sx,sy-3,6);
-        // Hood
+        
         sr.setColor(f?Color.WHITE:new Color(0.18f,0.03f,0.30f,1f));
         sr.triangle(sx-6,sy-2,sx,sy-13,sx+6,sy-2);
 
-        // Eyes
+   
         sr.setColor(f?Color.WHITE:EYES);
         sr.circle(sx-2,sy-3,2); sr.circle(sx+2,sy-3,2);
         sr.setColor(f?Color.WHITE:CLAW);
         sr.circle(sx-2,sy-3,1); sr.circle(sx+2,sy-3,1);
 
-        // Claws
         sr.setColor(f?Color.WHITE:CLAW);
         sr.rectLine(sx-6,sy+2,sx-10,sy,1.2f);
         sr.rectLine(sx-6,sy+4,sx-11,sy+3,1.2f);
@@ -80,9 +74,7 @@ class ShadowWraith extends Enemy {
     }
 }
 
-// ════════════════════════════════════════════════════════════════
-// BONE ARCHER — дистанция + отступ, зона 1
-// ════════════════════════════════════════════════════════════════
+
 class BoneArcher extends Enemy {
 
     private static final Color BONE  = new Color(0.83f,0.77f,0.60f,1f);
@@ -118,36 +110,36 @@ class BoneArcher extends Enemy {
         boolean f = hitFlash>0&&(int)(hitFlash*20)%2==0;
         float sx=x, sy=y;
 
-        // Legs (bones) — уменьшены
+       
         sr.setColor(f?Color.WHITE:BONE);
         sr.rectLine(sx-3,sy-8,sx-3,sy,1.5f); sr.rectLine(sx+3,sy-8,sx+3,sy,1.5f);
 
-        // Ribcage body
+      
         sr.setColor(f?Color.WHITE:BONE);
         sr.rect(sx-5,sy,10,8);
         sr.setColor(f?Color.WHITE:DARK);
         for(int i=0;i<3;i++) sr.rectLine(sx-4,sy+1+i*2,sx+4,sy+1+i*2,0.8f);
 
-        // Skull
+     
         sr.setColor(f?Color.WHITE:BONE);
         sr.circle(sx,sy+14,6);
-        // Jaw
+      
         sr.setColor(f?Color.WHITE:new Color(0.75f,0.70f,0.55f,1f));
         sr.rect(sx-4,sy+8,8,3);
         sr.setColor(f?Color.WHITE:DARK);
         for(int i=0;i<3;i++) sr.rectLine(sx-3+i*3,sy+8,sx-3+i*3,sy+10,1f);
-        // Eye sockets
+      
         sr.setColor(f?Color.WHITE:new Color(0.1f,0.06f,0f,1f));
         sr.circle(sx-2,sy+14,2); sr.circle(sx+2,sy+14,2);
 
-        // Bow
+     
         float ba = facing;
         float bx2=sx+(float)Math.cos(ba)*8, by2=sy+(float)Math.sin(ba)*8;
         sr.setColor(f?Color.WHITE:ARROW);
         sr.arc(bx2,by2,4,-ba*57.3f-80,-ba*57.3f+80);
         sr.rectLine(bx2+(float)Math.cos(ba+Math.PI/2)*4,by2+(float)Math.sin(ba+Math.PI/2)*4,
                     bx2-(float)Math.cos(ba+Math.PI/2)*4,by2-(float)Math.sin(ba+Math.PI/2)*4,0.8f);
-        // Arrow on string
+       
         sr.setColor(f?Color.WHITE:new Color(0.6f,0.4f,0.1f,1f));
         sr.rectLine(sx+(float)Math.cos(ba)*2,sy+(float)Math.sin(ba)*2,bx2,by2,1.5f);
 
