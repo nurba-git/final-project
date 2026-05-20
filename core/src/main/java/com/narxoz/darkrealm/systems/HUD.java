@@ -58,7 +58,7 @@ public class HUD {
 
         if (chestHint) {
             small.setColor(new Color(0.98f,0.85f,0.30f,1f));
-            small.draw(batch,"[E] Открыть сундук", C.W/2f-50, 26);
+            small.draw(batch,"[E] Open chest", C.W/2f-50, 26);
             small.setColor(Color.WHITE);
         }
 
@@ -92,7 +92,7 @@ public class HUD {
         sr.setColor(0.10f,0.10f,0.10f,0.8f); sr.rect(x,y,16,16);
         float fill = max > 0 ? (1f - cd / max) : 1f;
         sr.setColor(col); sr.rect(x,y,16,16*fill);
-        sr.setColor(Color.WHITE); 
+        sr.setColor(Color.WHITE); // border
         sr.rectLine(x,y,x+16,y,1); sr.rectLine(x,y+16,x+16,y+16,1);
         sr.rectLine(x,y,x,y+16,1); sr.rectLine(x+16,y,x+16,y+16,1);
     }
@@ -141,7 +141,6 @@ public class HUD {
         sr.setColor(0.35f,0.95f,0.50f,1f);
         sr.rect(mmX+px*sc, mmY+py*sc, sc+1, sc+1);
 
-    
         sr.setColor(0.4f,0.4f,0.5f,0.8f);
         float bw=C.COLS*sc+4, bh=C.ROWS*sc+4;
         sr.rectLine(mmX-2, mmY-2, mmX-2+bw, mmY-2, 1);
