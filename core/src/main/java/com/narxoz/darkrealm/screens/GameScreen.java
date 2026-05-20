@@ -17,6 +17,7 @@ import com.narxoz.darkrealm.screens.MainMenuScreen;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class GameScreen implements Screen {
 
     private final DarkRealmGame game;
@@ -41,8 +42,8 @@ public class GameScreen implements Screen {
     private int kills = 0;
     private int lastPlayerLevel = 1;
 
-    private List<float[]> shrines = new ArrayList<>();   
-    private List<float[]> chests  = new ArrayList<>();   
+    private List<float[]> shrines = new ArrayList<>();   // {x,y,used}
+    private List<float[]> chests  = new ArrayList<>();   // {x,y,opened}
 
     private VillageElder npc;
     private String dialogLine = null;
@@ -102,7 +103,6 @@ public class GameScreen implements Screen {
                 chests.add(new float[]{rc.centerX()*C.TILE+C.TILE/2f, rc.centerY()*C.TILE+C.TILE/2f, 0});
             }
         }
-
         if (z <= 2 && dungeon.rooms.size() > 2) {
             Room nr = dungeon.rooms.get(1);
             npc = new VillageElder(nr.centerX()*C.TILE+C.TILE/2f+24,
@@ -111,6 +111,7 @@ public class GameScreen implements Screen {
 
         darkAlpha = z == 3 ? 0.55f : 0f;
     }
+
     @Override
     public void render(float delta) {
         delta = Math.min(delta, 0.05f);
@@ -183,6 +184,7 @@ public class GameScreen implements Screen {
                 game.setScreen(new VictoryScreen(game, kills));
             }
         }
+
         for (Bullet b : new ArrayList<>(bp.getActive())) {
             if (!b.fromPlayer || !b.alive) continue;
             for (Enemy e : enemies) {
@@ -222,22 +224,22 @@ public class GameScreen implements Screen {
 
         if (input.isInteract()) {
             for (float[] ch : chests) {
-                if (ch[2] == 1) continue; 
+                if (ch[2] == 1) continue;
                 if (CollisionSystem.dist(player.x, player.y, ch[0], ch[1]) < 20) {
                     ch[2] = 1;
                     game.sound.playPickup();
                     fx.burst(ch[0], ch[1], new Color(0.83f, 0.63f, 0.09f, 1f), 14, 2.5f, 0.6f);
                     int roll = (int)(Math.random() * 3);
                     if (roll == 0) {
-                        int heal = 20 + (int)(Math.random() * 31);
+                        int heal = 20 + (int)(Math.random() * 31); // 20-50
                         player.heal(heal);
-                        hud.showQuestMsg("Сундук открыт! +" + heal + " HP");
+                        hud.showQuestMsg("Chest opened! +" + heal + " HP");
                     } else if (roll == 1) {
-                        player.gainExp(40 + (int)(Math.random() * 61));
-                        hud.showQuestMsg("Сундук открыт! +EXP");
+                        player.gainExp(40 + (int)(Math.random() * 61)); // 40-100 EXP
+                        hud.showQuestMsg("Chest opened! +EXP");
                     } else {
                         player.atk += 2;
-                        hud.showQuestMsg("Сундук открыт! +2 ATK");
+                        hud.showQuestMsg("Chest opened! +2 ATK");
                     }
                     break;
                 }
