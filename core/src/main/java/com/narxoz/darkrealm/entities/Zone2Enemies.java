@@ -5,9 +5,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.narxoz.darkrealm.C;
 import com.narxoz.darkrealm.systems.*;
 
-// ════════════════════════════════════════════════════════════════
-// CURSED KNIGHT — щит блокирует фронт + фланг, зона 2
-// ════════════════════════════════════════════════════════════════
 class CursedKnight extends Enemy {
 
     private static final Color ARMOR  = new Color(0.22f,0.22f,0.28f,1f);
@@ -45,38 +42,38 @@ class CursedKnight extends Enemy {
         boolean f = hitFlash>0&&(int)(hitFlash*20)%2==0;
         float sx=x, sy=y;
 
-        // Boots (уменьшены)
+       
         sr.setColor(f?Color.WHITE:new Color(0.14f,0.14f,0.18f,1f));
         sr.rect(sx-5,sy-8,5,4); sr.rect(sx+1,sy-8,5,4);
-        // Leg armor
+       
         sr.setColor(f?Color.WHITE:ARMOR);
         sr.rect(sx-5,sy-4,4,6); sr.rect(sx+1,sy-4,4,6);
-        // Torso
+      
         sr.setColor(f?Color.WHITE:ARMOR);
         sr.rect(sx-7,sy+2,14,9);
         sr.setColor(f?Color.WHITE:PLATE);
         sr.rect(sx-5,sy+3,10,7);
-        // Purple cross emblem
+      
         sr.setColor(f?Color.WHITE:PURPLE);
         sr.rect(sx-1,sy+4,2,6); sr.rect(sx-3,sy+6,6,2);
-        // Shoulders
+      
         sr.setColor(f?Color.WHITE:PLATE);
         sr.rect(sx-10,sy+2,5,7); sr.rect(sx+5,sy+2,5,7);
-        // Arms
+     
         sr.setColor(f?Color.WHITE:ARMOR);
         sr.rect(sx-10,sy+1,4,8); sr.rect(sx+6,sy+1,4,8);
-        // Helmet
+      
         sr.setColor(f?Color.WHITE:ARMOR);
         sr.rect(sx-6,sy+11,12,10);
         sr.setColor(f?Color.WHITE:new Color(0.08f,0.08f,0.12f,1f));
         sr.rect(sx-5,sy+13,10,4); // visor
         sr.setColor(f?Color.WHITE:PURPLE);
         sr.rect(sx-4,sy+14,8,2); // visor glow slit
-        // Helmet plume
+      
         sr.setColor(f?Color.WHITE:new Color(0.49f,0.23f,0.93f,0.9f));
         sr.triangle(sx-2,sy+21, sx,sy+27, sx+2,sy+21);
 
-        // Tower shield
+      
         float shA = facing + (float)Math.PI;
         float shX=sx+(float)Math.cos(shA)*9, shY=sy+(float)Math.sin(shA)*9;
         sr.setColor(f?Color.WHITE:SHIELD);
@@ -86,7 +83,7 @@ class CursedKnight extends Enemy {
         sr.setColor(f?Color.WHITE:new Color(0.38f,0.64f,0.98f,1f));
         sr.rect(shX-2,shY-1,5,2); sr.rect(shX-1,shY-4,2,8);
 
-        // Sword
+       
         float swX=sx+(float)Math.cos(facing)*5, swY=sy+(float)Math.sin(facing)*5;
         float swEx=sx+(float)Math.cos(facing)*14,swEy=sy+(float)Math.sin(facing)*14;
         sr.setColor(f?Color.WHITE:new Color(0.65f,0.65f,0.70f,1f));
@@ -96,9 +93,7 @@ class CursedKnight extends Enemy {
     }
 }
 
-// ════════════════════════════════════════════════════════════════
-// PLAGUE HOUND — пак по 3, прыжок + яд, зона 2
-// ════════════════════════════════════════════════════════════════
+
 class PlagueHound extends Enemy {
 
     private static final Color BODY   = new Color(0.21f,0.39f,0.08f,1f);
@@ -135,34 +130,33 @@ class PlagueHound extends Enemy {
         float sx=x, sy=y;
         float legSwing = (float)Math.sin(walkTimer * 8f) * 2f;
 
-        // Body (уменьшен)
         sr.setColor(f?Color.WHITE:BODY);
         sr.ellipse(sx-8,sy-4,16,8);
-        // Legs
+       
         sr.setColor(f?Color.WHITE:new Color(0.18f,0.33f,0.06f,1f));
         sr.rectLine(sx-6,sy-4,sx-7+legSwing,sy-9,2f);
         sr.rectLine(sx-2,sy-4,sx-3-legSwing,sy-9,2f);
         sr.rectLine(sx+2,sy-4,sx+3+legSwing,sy-9,2f);
         sr.rectLine(sx+6,sy-4,sx+7-legSwing,sy-9,2f);
-        // Tail
+      
         sr.setColor(f?Color.WHITE:BODY);
         sr.rectLine(sx+8,sy,sx+13,sy+3,2f);
 
-        // Head
+        
         sr.setColor(f?Color.WHITE:new Color(0.25f,0.46f,0.10f,1f));
         sr.ellipse(sx-14,sy-1,10,8);
-        // Snout
+     
         sr.setColor(f?Color.WHITE:BODY);
         sr.ellipse(sx-18,sy+1,7,5);
-        // Nose
+       
         sr.setColor(f?Color.WHITE:new Color(0.10f,0.18f,0.03f,1f));
         sr.circle(sx-19,sy+3,1.5f);
-        // Eyes
+       
         sr.setColor(f?Color.WHITE:new Color(0.95f,0.90f,0.20f,1f));
         sr.circle(sx-11,sy+2,2); sr.circle(sx-8,sy+2,2);
         sr.setColor(f?Color.WHITE:new Color(0.06f,0.10f,0.02f,1f));
         sr.circle(sx-11,sy+2,1f); sr.circle(sx-8,sy+2,1f);
-        // Poison drip
+        
         sr.setColor(f?Color.WHITE:POISON);
         sr.circle(sx-18,sy-1,1.5f);
 
