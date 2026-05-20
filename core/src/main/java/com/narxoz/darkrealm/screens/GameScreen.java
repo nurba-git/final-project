@@ -9,7 +9,6 @@ import com.narxoz.darkrealm.interfaces.IInputHandler;
 import com.narxoz.darkrealm.systems.*;
 import com.narxoz.darkrealm.world.*;
 
-// Explicit imports for same-package screens (avoids cascade compile errors)
 import com.narxoz.darkrealm.screens.VictoryScreen;
 import com.narxoz.darkrealm.screens.PauseScreen;
 import com.narxoz.darkrealm.screens.GameOverScreen;
@@ -42,8 +41,8 @@ public class GameScreen implements Screen {
     private int kills = 0;
     private int lastPlayerLevel = 1;
 
-    private List<float[]> shrines = new ArrayList<>();   // {x,y,used}
-    private List<float[]> chests  = new ArrayList<>();   // {x,y,opened}
+    private List<float[]> shrines = new ArrayList<>();   
+    private List<float[]> chests  = new ArrayList<>();   
 
     private VillageElder npc;
     private String dialogLine = null;
@@ -223,18 +222,18 @@ public class GameScreen implements Screen {
 
         if (input.isInteract()) {
             for (float[] ch : chests) {
-                if (ch[2] == 1) continue; // already opened
+                if (ch[2] == 1) continue; 
                 if (CollisionSystem.dist(player.x, player.y, ch[0], ch[1]) < 20) {
                     ch[2] = 1;
                     game.sound.playPickup();
                     fx.burst(ch[0], ch[1], new Color(0.83f, 0.63f, 0.09f, 1f), 14, 2.5f, 0.6f);
                     int roll = (int)(Math.random() * 3);
                     if (roll == 0) {
-                        int heal = 20 + (int)(Math.random() * 31); // 20-50
+                        int heal = 20 + (int)(Math.random() * 31);
                         player.heal(heal);
                         hud.showQuestMsg("Сундук открыт! +" + heal + " HP");
                     } else if (roll == 1) {
-                        player.gainExp(40 + (int)(Math.random() * 61)); // 40-100 EXP
+                        player.gainExp(40 + (int)(Math.random() * 61));
                         hud.showQuestMsg("Сундук открыт! +EXP");
                     } else {
                         player.atk += 2;
